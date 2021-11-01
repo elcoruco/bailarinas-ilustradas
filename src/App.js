@@ -1,8 +1,26 @@
 import {csv} from "d3-fetch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
-  const [items, setItems] = useState(null);
+  const [items, setItems]   = useState(null);
+  const [filteredItems, setFilteredItems]   = useState(null);
+  const [artist, setArtist] = useState('');
+  const [years, setYears]   = useState([]);
+  const [year, setYear]     = useState('');
+
+  useEffect( () => {
+    if(!items || years.length) return;
+    let ylist = [...new Set(items.map(item => +item.year))]
+    setYears(ylist.sort())
+  });
+  
+  useEffect( () => {
+    if(!items || filteredItems) return;
+    let baseItems = [...items];
+    setFilteredItems(baseItems)
+  });
+
+
   csv("vestuarios.csv").then(res => {
     if(!items){
       setItems(res.reverse());
@@ -11,6 +29,15 @@ function App() {
   
   return (
     <div className="App">
+      <form>
+        <input type="text" placeholder="artista" onChange={e => setArtist(e.target.value)}></input>
+        <select onChange={e => setYear(e.target.value)}>
+          <option value="">selecciona un año</option>
+          {years.map(y => 
+          <option key={`year-opt-${y}`}>{y}</option>
+          )}
+        </select>
+      </form>
       <table className="table-auto border-collapse border border-grey">
         <thead>
           <tr>
@@ -29,7 +56,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-        {items && items.map( (item,i) => 
+        {filteredItems && filteredItems.map( (item,i) => 
           <tr key={`item-${i}`}>
             <td className="border border-grey-600"><img style={{
               'width': '250px',
