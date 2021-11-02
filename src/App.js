@@ -1,5 +1,8 @@
 import {csv} from "d3-fetch";
 import { useState, useEffect } from "react";
+import ReactGA from 'react-ga';
+
+ReactGA.initialize('G-QGFD1S4ZCN')
 
 function App() {
   const [items, setItems]   = useState(null);
@@ -28,7 +31,17 @@ function App() {
   });
   
   return (
-    <div className="App">
+    <div className="App container mx-auto px-6">
+      <h1>Vestuarios ilustrados</h1>
+      <p>Esta es una colección de ilustraciones de vestuarios que me han gustado.
+        He capturado algunos metadatos de los vestuarios, como el evento en el que
+        se usaron, el año, el nombre de la bailarina y sus redes sociales, además del
+        link del video en el que vi el vestuario. Todo esto se puede descargar de  
+        <a href="https://github.com/elcoruco/bailarinas-ilustradas">github</a>. 
+        También es posible ver las ilustraciones en 
+        <a href="https://www.facebook.com/vestuariosilustrados">facebook</a> 
+        e <a href="https://www.instagram.com/comoaprendiabailar/">instagram</a>.
+      </p>
       <form>
         <input type="text" placeholder="artista" onChange={e => setArtist(e.target.value)}></input>
         <select onChange={e => setYear(e.target.value)}>
@@ -78,6 +91,7 @@ function App() {
         )}
         </tbody>
       </table>
+      <footer>Última actualización: 2 de noviembre de 2021</footer>
     </div>
   );
 }
