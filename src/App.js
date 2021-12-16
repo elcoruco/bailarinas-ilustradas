@@ -1,8 +1,29 @@
 import {csv} from "d3-fetch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import ReactGA from 'react-ga';
+
+ReactGA.initialize('G-QGFD1S4ZCN')
 
 function App() {
+
   const [items, setItems] = useState(null);
+  // const [items, setItems]   = useState(null);
+  const [filteredItems, setFilteredItems]   = useState(null);
+  const [artist, setArtist] = useState('');
+  const [years, setYears]   = useState([]);
+  const [year, setYear]     = useState('');
+
+  useEffect( () => {
+    if(!items || years.length) return;
+    let ylist = [...new Set(items.map(item => +item.year))]
+    setYears(ylist.sort())
+  });
+  
+  useEffect( () => {
+    if(!items || filteredItems) return;
+    let baseItems = [...items];
+    setFilteredItems(baseItems)
+  });
   const tags = [ "vestuariosilustrados", "salsacostume", "fashionillustration", 
     "procreateFashionIllustration", "fashionDesign", "illustration", "animeDancer", 
     "animeCostume", "procreateApp", "Salsa"];
@@ -41,6 +62,7 @@ function App() {
     <br></br>
     {item.song ? 'canción: ' + item.song : ''}</p>;
   }
+
   csv("vestuarios.csv").then(res => {
     if(!items){
       setItems(res.reverse());
@@ -48,7 +70,26 @@ function App() {
   });
   
   return (
-    <div className="App">
+    <div className="App container mx-auto px-6">
+      <h1>Vestuarios ilustrados</h1>
+      <p>Esta es una colección de ilustraciones de vestuarios que me han gustado.
+        He capturado algunos metadatos de los vestuarios, como el evento en el que
+        se usaron, el año, el nombre de la bailarina y sus redes sociales, además del
+        link del video en el que vi el vestuario. Todo esto se puede descargar de  
+         <a href="https://github.com/elcoruco/bailarinas-ilustradas">github</a>. 
+        También es posible ver las ilustraciones en 
+         <a href="https://www.facebook.com/vestuariosilustrados">facebook</a>   
+        e <a href="https://www.instagram.com/comoaprendiabailar/">instagram</a>.
+      </p>
+      <form>
+        <input type="text" placeholder="artista" onChange={e => setArtist(e.target.value)}></input>
+        <select onChange={e => setYear(e.target.value)}>
+          <option value="">selecciona un año</option>
+          {years.map(y => 
+          <option key={`year-opt-${y}`}>{y}</option>
+          )}
+        </select>
+      </form>
       <table className="table-auto border-collapse border border-grey">
         <thead>
           <tr>
@@ -69,7 +110,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-        {items && items.map( (item,i) => 
+        {filteredItems && filteredItems.map( (item,i) => 
           <tr key={`item-${i}`}>
             <td className="border border-grey-600"><img style={{
               'width': '250px',
@@ -93,6 +134,7 @@ function App() {
         )}
         </tbody>
       </table>
+      <footer>Última actualización: 2 de noviembre de 2021</footer>
     </div>
   );
 }
